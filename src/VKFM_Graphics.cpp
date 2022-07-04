@@ -175,7 +175,11 @@ int VK_MakeSpriteSheet(int sprstart, int sprend, std::string sprname){
 				"bitmap is smaller than largest in group - " << bmpname << std::endl << "bitmap will be resized in final image" << std::endl;
 			
 			bmp_sprite.crop_bmp(bmp_sprite,0,0,(bmp_sprite.dib_head.bitmap_width/2),bmp_sprite.dib_head.bitmap_height);
-			bmp_sprite.resize_bmp(bmp_sprite,cw,ch,0x10);
+			if((VKMake_Flags&static_cast<int>(VKFLAG::HD_SPRITES)) ){
+				bmp_sprite.resize_bmp(bmp_sprite,cw,ch,0);
+			}else{
+				bmp_sprite.resize_bmp(bmp_sprite,cw,ch,0x10);
+			}
 			
 		}/*else if(bmp_sprite.dib_head.bitmap_width>spr_width||bmp_sprite.dib_head.bitmap_height>spr_height){
 			std::cout << std::string("vkmgfx: ") <<
