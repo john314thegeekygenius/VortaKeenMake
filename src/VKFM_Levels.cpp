@@ -9,7 +9,7 @@
 #include "VKFM_Heads.h"
 
 
-const int MAX_LEVEL_TILES = 160-27;
+const int MAX_LEVEL_TILES = 160-14;
 
 // Not used (For unlzexe'ed exes)
 const int CK1_TileInfo_Offset = 0x130F8;
@@ -243,7 +243,40 @@ int VK_LoadLevel(int level_id){
 			"done collecting tiles " << std::to_string((int)bi) << std::endl;
 			break;
 		}
+		//if(VK_LevelTInfo[1][b]==25||VK_LevelTInfo[1][b]==26){
+		//}
+
 		for(auto t : const_tiles){
+			
+			if(t.name.compare("SWITCH")==0){
+				if(b == (t.value)){
+					addnew = 1;
+					for(auto c : VK_LevelTiles){
+						if(c == t.value) addnew = 0;
+					}
+					if(addnew)
+						VK_LevelTiles.push_back(t.value); // Add the switch tile here
+					addnew = 1;
+					for(auto c : VK_LevelTiles){
+						if(c == (b+1)) addnew = 0;
+					}
+					if(addnew)
+						VK_LevelTiles.push_back(b+1); // Add the switch tile here
+						
+					for(auto B : const_tiles){
+						if(B.name.compare("BRIDGE")==0){
+							addnew = 1;
+							for(auto c : VK_LevelTiles){
+								if(c == B.value) addnew = 0;
+							}
+							if(addnew)
+								VK_LevelTiles.push_back(B.value); // Add the bridge tile here
+						}
+					}
+					
+				}
+			}
+			
 			if(t.name.compare("STATUE")==0){
 				if(b == (t.value+13)){
 					addnew = 1;
@@ -296,6 +329,7 @@ int VK_LoadLevel(int level_id){
 			}
 		}
 	}
+
 	
 	// Make sure there aren't too many tiles in the level
 	if(VK_LevelTiles.size() > MAX_LEVEL_TILES){
