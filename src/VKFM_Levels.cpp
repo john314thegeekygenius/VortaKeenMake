@@ -223,12 +223,17 @@ int VK_LoadLevel(int level_id){
 	for(auto t : const_tiles){
 		if(VK_PartCompareString(t.name,"BACKGROUND")==0){
 			int addnew = 1;
-			for(auto c : VK_LevelTiles){
-				if(c == t.value) addnew = 0;
+			if(t.value==9999)
+				addnew = 0;
+			else{
+				for(auto c : VK_LevelTiles){
+					if(c == t.value) addnew = 0;
+				}
+				if(addnew){
+					VK_LevelTiles.push_back(t.value);
+				}
 			}
-			if(addnew){
-				VK_LevelTiles.push_back(t.value);
-			}
+			break;
 		}
 	}
 	

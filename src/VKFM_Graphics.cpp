@@ -139,6 +139,8 @@ int VK_MakeSpriteSheet(int sprstart, int sprend, std::string sprname){
 			spr_height = bmp_sprite.dib_head.bitmap_height;
 		}
 	}
+	uint32_t fsw = spr_width/2;
+	uint32_t fsh = spr_height;
 	
 	for(int sprite_num = sprstart; sprite_num <= sprend; sprite_num++){
 		// make the file name
@@ -168,6 +170,7 @@ int VK_MakeSpriteSheet(int sprstart, int sprend, std::string sprname){
 		uint32_t cw = spr_width/2;
 		uint32_t ch = spr_height;
 		
+		
 		if(bmp_sprite.dib_head.bitmap_width<spr_width||bmp_sprite.dib_head.bitmap_height<spr_height){
 			std::cout << std::string("vkmgfx: ") <<
 				VK_SetConsoleColor(VK_CONSOLE_COLORS::PURPLE,VK_CONSOLE_COLORS::DEFAULT) <<
@@ -192,12 +195,24 @@ int VK_MakeSpriteSheet(int sprstart, int sprend, std::string sprname){
 			bmp_sprite.crop_bmp(bmp_sprite,0,0,cw,ch);
 		}
 		
-		// Fix height
+		// Fix the size
 		int divch = ch/8;
+		int divcw = cw/8;
+		bool changedsize = false;
 		if((divch*8)<ch){
-			bmp_sprite.resize_bmp(bmp_sprite,cw,(divch*8)+8,0x10);
+			ch = (divch*8)+8;
+			changedsize = true;
+			fsh = ch;
 		}
-
+		if((divcw*8)<cw){
+			cw = (divcw*8)+8;
+			changedsize = true;
+			fsw = cw;
+		}
+		if(changedsize){
+			bmp_sprite.resize_bmp(bmp_sprite,cw,ch,0x10);
+		}
+		
 		std::cout<< std::dec << cw << " x " << ch << std::endl;
 						
 		sprite_sheet.stitch(bmp_sprite,place_x,0);
@@ -219,13 +234,13 @@ int VK_MakeSpriteSheet(int sprstart, int sprend, std::string sprname){
 			
 	// Export the tileset
 	if((VKMake_Flags&static_cast<int>(VKFLAG::HD_SPRITES)) ){
-		bitmap_error = sprite_sheet.exportsprgb(VK_FileDirectory+"/graph/sheets/exports/"+sprname+".h",sprname,spr_width/2,spr_height);
+		bitmap_error = sprite_sheet.exportsprgb(VK_FileDirectory+"/graph/sheets/exports/"+sprname+".h",sprname,fsw,fsh);
 		if(bitmap_error!=VK_BMPERRORS::NO_ERROR){
 			std::cout << "Error saving header! Error code " << (int)bitmap_error << std::endl;
 			return 1;
 		}	
 	}else{
-		bitmap_error = sprite_sheet.exportspr(VK_FileDirectory+"/graph/sheets/exports/"+sprname+".h",sprname,spr_width/2,spr_height);
+		bitmap_error = sprite_sheet.exportspr(VK_FileDirectory+"/graph/sheets/exports/"+sprname+".h",sprname,fsw,fsh);
 		if(bitmap_error!=VK_BMPERRORS::NO_ERROR){
 			std::cout << "Error saving header! Error code " << (int)bitmap_error << std::endl;
 			return 1;
